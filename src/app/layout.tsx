@@ -17,9 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className={`${inter.className} min-h-screen`}>
-        {/* <div className="nav min-h-10 bg-slate-900 flex">
-          <image></image>
-        </div> */}
+        <div className="nav min-h-10 bg-slate-900 flex">
+          <div className="text-3xl tracking-tight font-semibold p-2 text-[#7582ff]">
+            SageStream
+          </div>
+        </div>
         {children}
       </body>
     </html>

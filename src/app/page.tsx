@@ -126,7 +126,7 @@ function SearchBar(props: {
         className="input input-primary input-md join-item focus:outline-none w-full opacity-70"
         onChange={(e) => setText(e.target.value)}
         value={text}
-        placeholder="Search any topic... e.g. How to win a Hackathon"
+        placeholder="Search any topic to learn..."
         onKeyDown={(e) => {
           if (e.key === "Enter") onClick();
         }}
@@ -136,7 +136,7 @@ function SearchBar(props: {
         onClick={onClick}
         disabled={props.isLoading}
       >
-        {props.isLoading ? <div className="loading-spinner" /> : "Search"}
+        {props.isLoading ? <div className="loading-spinner" /> : "Learn"}
       </button>
     </div>
   );

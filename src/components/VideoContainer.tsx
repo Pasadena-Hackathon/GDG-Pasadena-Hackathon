@@ -25,7 +25,7 @@ export function TopicContainer(props: { topicResult: TopicResult }) {
       {/* videos */}
       <div className="grid grid-flow-row grid-cols-2 sm:grid-cols-3 md:grid-cols-5 items-center auto-rows-auto w-full">
         {props.topicResult.videos.map((vid, index) => (
-          <div className="size-full m-2 place-content-center" key={index}>
+          <div className="size-full m-2 place-content-center px-4" key={index}>
             <VideoResult key={index} videoResult={vid} />
           </div>
         ))}
