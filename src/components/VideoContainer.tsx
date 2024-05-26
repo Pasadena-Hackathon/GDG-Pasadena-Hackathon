@@ -92,7 +92,7 @@ export const testData: TopicData[] = [
 export function VideoContainer(props: { videoData: VideoData }) {
   //todo: thumbnail ?
   return (
-    <div className="aspect-square border-2 border-red-500 place-content-center">
+    <div className="aspect-square  place-content-center">
       <a href={props.videoData.url}>Goto</a>
     </div>
   );
@@ -119,15 +119,12 @@ export function TopicContainer(props: { topicData: TopicData }) {
   //   );
 
   return (
-    <div className="flex flex-col sm:flex-row border-2">
+    <div className="flex flex-col sm:flex-row ">
       <TopicInfo topicData={props.topicData} />
       {/* videos */}
       <div className="grid grid-flow-row grid-cols-2 sm:grid-cols-3 md:grid-cols-5 items-center auto-rows-auto w-full">
         {props.topicData.videos.map((vid, index) => (
-          <div
-            className="size-full m-2 border-2 place-content-center"
-            key={index}
-          >
+          <div className="size-full m-2 place-content-center" key={index}>
             <VideoContainer key={index} videoData={vid} />
           </div>
         ))}
@@ -138,7 +135,7 @@ export function TopicContainer(props: { topicData: TopicData }) {
 
 function TopicInfo(props: { topicData: TopicData }) {
   return (
-    <div className="flex flex-col border-2 border-purple-500 p-4 items-start text-left w-full sm:max-w-[30%] min-w-[30%] min-h-20">
+    <div className="flex flex-col  p-4 items-start text-left w-full sm:max-w-[30%] min-w-[30%] min-h-20">
       <div className="text-3xl font-bold opacity-50">
         {props.topicData.topic}
       </div>
@@ -156,9 +153,12 @@ export default function KnowledgePage(props: {
    */
   return (
     //
-    <div className="flex flex-col gap-2 border-2 border-white min-w-full max-w-screen">
+    <div className="flex flex-col gap-2  min-w-full max-w-screen">
       {props.topics.map((topicData, index) => (
-        <TopicContainer key={index} topicData={topicData} />
+        <>
+          <TopicContainer key={index} topicData={topicData} />
+          <div className="divider" />
+        </>
       ))}
     </div>
   );
