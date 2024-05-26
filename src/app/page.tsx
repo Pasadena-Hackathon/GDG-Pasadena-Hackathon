@@ -28,7 +28,9 @@ export default function Home() {
   const onSearchBtnClick = async () => {
     // const topicQuery = { topic: searchText }; //TODO: this needs to be TopicQuery type
     const endpoint = "https://topicstart-2u42nddpka-uc.a.run.app";
-    console.log("QUERY:" + topicQuery);
+    // console.log("QUERY:" + topicQuery);
+    console.log(JSON.stringify(topicQuery));
+    // return;
     setIsLoading(true);
     const result = await fetch(endpoint, {
       headers: { "content-type": "application/json" },
@@ -44,7 +46,6 @@ export default function Home() {
       alert("Error Loading results");
       setTopicResults(null);
     }
-    console.log(topicResults);
   };
 
   // useEffect(() => {
@@ -54,6 +55,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-slate-900">
       <SearchBar
+        topicQuery={topicQuery}
         isLoading={isLoading}
         onSearchBtnClick={onSearchBtnClick}
         setTopicQuery={setTopicQuery}
@@ -109,6 +111,7 @@ function Filters(props: { topicQuery: TopicQuery; setTopicQuery: Function }) {
 
 function SearchBar(props: {
   isLoading: boolean;
+  topicQuery: TopicQuery;
   onSearchBtnClick: (s: string) => any;
   setTopicQuery: Function;
 }) {
@@ -116,15 +119,21 @@ function SearchBar(props: {
 
   const onClick = () => {
     if (text.length === 0 || props.isLoading) return;
-    props.onSearchBtnClick?.(text);
     props.setTopicQuery((prev: TopicQuery) => ({ ...prev, topic: text }));
+    props.onSearchBtnClick?.(text);
   };
 
   return (
     <div className="flex m-4 place-content-center join w-[80%] sm:w-[50%] text-white">
       <input
         className="input input-primary input-md join-item focus:outline-none w-full opacity-70"
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => {
+          setText(e.target.value);
+          props.setTopicQuery((prev: TopicQuery) => ({
+            ...prev,
+            topic: e.target.value,
+          }));
+        }}
         value={text}
         placeholder="Search any topic to learn..."
         onKeyDown={(e) => {
