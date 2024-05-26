@@ -132,11 +132,14 @@ function SearchBar(props: {
         }}
       />
       <button
-        className={`btn btn-primary join-item`}
+        className={`btn btn-primary join-item ${
+          props.isLoading && `loading loading-dots`
+        }`}
+        // className={`btn btn-primary join-item`}
         onClick={onClick}
         disabled={props.isLoading}
       >
-        {props.isLoading ? <div className="loading-spinner" /> : "Learn"}
+        {props.isLoading ? "" : "Learn"}
       </button>
     </div>
   );
