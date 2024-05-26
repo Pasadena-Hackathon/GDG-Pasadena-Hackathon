@@ -60,7 +60,7 @@ export default function Home() {
 }
 
 function Filters(props: { topicQuery: TopicQuery; setTopicQuery: Function }) {
-  const eduLevels = ["High School", "College", "Graduate", "PHD"];
+  const eduLevels = Object.values(EducationLevel);
 
   return (
     <div className="flex flex-col">
@@ -89,7 +89,7 @@ function Filters(props: { topicQuery: TopicQuery; setTopicQuery: Function }) {
               props.setTopicQuery(
                 (prev: TopicQuery): TopicQuery => ({
                   ...prev,
-                  education: index,
+                  education: el,
                 })
               )
             }

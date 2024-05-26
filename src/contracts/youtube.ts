@@ -325,24 +325,45 @@ export const youtubeCategories = {
   ],
 };
 
+export const youtubeCategoryList = youtubeCategories.items.map(item => ({
+    id: item.id,
+    title: item.snippet.title,
+}));
+
+export const youtubeCategoryNames = youtubeCategoryList.map(item => item.title);
+
+export const youtubeCategoriesFormatted = '- ' + youtubeCategoryNames.join('\n -');
+
 export interface YoutubeVideo {
-  videoId: string;
-  url: string;
-  title: string;
-  description: string;
-  publishTime: string;
-  thumbnail: Thumbnail;
+    url: string;
+    videoId: string;
+    title: string;
+    description: string;
+    publishTime: string;
+    thumbnail: Thumbnail;
 }
 
 export interface YoutubeVideoResult {
-  publishedAt: string;
-  channelId: string;
-  title: string;
-  description: string;
-  thumbnails: Thumbnails;
-  channelTitle: string;
-  liveBroadcastContent: string;
-  publishTime: string;
+    kind: string
+    etag: string
+    id: {
+        kind: string
+        videoId: string
+    }
+    snippet: {
+        publishedAt: string
+        channelId: string
+        title: string
+        description: string
+        thumbnails: {
+            default: Thumbnail
+            medium: Thumbnail
+            high: Thumbnail
+        }
+        channelTitle: string
+        liveBroadcastContent: string
+        publishTime: string
+    }
 }
 
 export interface Thumbnails {
