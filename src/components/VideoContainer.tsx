@@ -1,18 +1,15 @@
-import { TopicResults, TopicResult, YoutubeVideoResult } from "@/contracts";
+"use client";
 
-export interface VideoData {
-  url: string;
-  //TODO: ... other
-}
+import { TopicResults, TopicResult, YoutubeVideo } from "@/contracts";
 
-export function VideoResult(props: { videoResult: YoutubeVideoResult }) {
+export function VideoResult(props: { videoResult: YoutubeVideo }) {
   //todo: thumbnail ?
-  const videoUrl = `https://www.youtube.com/watch?v=${props.videoResult.channelId}`;
-  const thumbnailUrl = props.videoResult.thumbnails.default.url;
+  const videoUrl = props.videoResult.url;
+  const thumbnailUrl = props.videoResult.thumbnail.url;
   return (
     <div className="aspect-square  place-content-center">
       <a href={videoUrl}>
-        <img src={"https://i.ytimg.com/vi/r0VgFZv7o0k/default.jpg"}></img>
+        <img src={props.videoResult.thumbnail.url}></img>
       </a>
     </div>
   );
@@ -59,10 +56,10 @@ export default function KnowledgePage(props: {
     //
     <div className="flex flex-col gap-2  min-w-full max-w-screen">
       {props.topicResults?.results.map((topicData, index) => (
-        <>
+        <div key={index}>
           <TopicContainer key={index} topicResult={topicData} />
           <div className="divider" />
-        </>
+        </div>
       ))}
     </div>
   );

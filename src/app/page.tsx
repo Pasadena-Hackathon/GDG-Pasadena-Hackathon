@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 import KnowledgePage from "@/components/VideoContainer";
+import { testTopicResults } from "@/contracts/test_data";
 
 import {
   EducationLevel,
@@ -11,47 +12,92 @@ import {
   TopicResults,
 } from "@/contracts";
 
-const uuid = v4;
+const UUID = v4;
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [topicResults, setTopicResults] = useState<TopicResults | null>(null);
-
-  const [topicQuery, setTopicQuery] = useState<TopicQuery>({
-    uuid: uuid(),
+  const [userId, setUserId] = useState<string>(UUID());
+  const [topicQuery, setTopicQuery] = useState({
+    userId,
     topic: "",
     age: 15,
     education: EducationLevel.HIGH_SCHOOL,
   });
 
   const onSearchBtnClick = async (searchText: string) => {
-    const topicQuery = { topic: searchText }; //TODO: this needs to be TopicQuery type
-    const endpoint = "";
+    // const topicQuery = { topic: searchText }; //TODO: this needs to be TopicQuery type
+    const endpoint = "https://topicstart-2u42nddpka-uc.a.run.app";
     setIsLoading(true);
     const result = await fetch(endpoint, {
+      headers: { "content-type": "application/json" },
       method: "POST",
       body: JSON.stringify(topicQuery),
     });
+    // console.log(result);
     setIsLoading(false);
     if (result.ok) {
       const data = await result.json();
       setTopicResults(data);
+    } else {
+      alert("Error Loading results");
+      setTopicResults(null);
     }
-    // console.log(result);
+    console.log(topicResults);
   };
+
+  // useEffect(() => {
+  //   console.log(topicQuery);
+  // }, [topicQuery]);
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-slate-900">
       <SearchBar isLoading={isLoading} onSearchBtnClick={onSearchBtnClick} />
+      <Filters setTopicQuery={setTopicQuery} topicQuery={topicQuery} />
       <KnowledgePage topicResults={topicResults} isLoading={isLoading} />
     </div>
   );
 }
 
-function Filters(props: { updateFilters: Function }) {
+function Filters(props: { topicQuery: TopicQuery; setTopicQuery: Function }) {
+  const eduLevels = ["High School", "College", "Graduate", "PHD"];
+
   return (
     <div className="flex flex-col">
-      <div>{/* TODO: Finish */}</div>
+      <div>
+        <label>{`Age: ${props.topicQuery.age}`}</label>
+        <input
+          type="range"
+          min={0}
+          max="100"
+          value={props.topicQuery.age}
+          className="range range-sm"
+          onChange={(e) =>
+            props.setTopicQuery((prev: TopicQuery) => ({
+              ...prev,
+              age: e.target.value,
+            }))
+          }
+        />
+      </div>
+
+      <select className="select w-full max-w-xs select-sm">
+        {eduLevels.map((el, index) => (
+          <option
+            key={index}
+            onClick={(e) =>
+              props.setTopicQuery(
+                (prev: TopicQuery): TopicQuery => ({
+                  ...prev,
+                  education: index,
+                })
+              )
+            }
+          >
+            {el}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
