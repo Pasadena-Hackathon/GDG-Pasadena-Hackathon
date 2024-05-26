@@ -1,25 +1,57 @@
 "use client";
 
 import { useState } from "react";
-import KnowledgePage, {
-  testData,
-  TopicData,
-} from "@/components/VideoContainer";
+import { v4 } from "uuid";
+import KnowledgePage from "@/components/VideoContainer";
+
+import {
+  EducationLevel,
+  TopicQuery,
+  TopicResult,
+  TopicResults,
+} from "@/contracts";
+
+const uuid = v4;
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const [curData, setCurData] = useState<TopicData[]>([]);
+  const [topicResults, setTopicResults] = useState<TopicResults | null>(null);
 
-  const onSearchBtnClick = (searchText: string) => {
-    // TODO: SEND Search request for text
-    const msg = { searchText };
-    console.log(msg);
+  const [topicQuery, setTopicQuery] = useState<TopicQuery>({
+    uuid: uuid(),
+    topic: "",
+    age: 15,
+    education: EducationLevel.HIGH_SCHOOL,
+  });
+
+  const onSearchBtnClick = async (searchText: string) => {
+    const topicQuery = { topic: searchText }; //TODO: this needs to be TopicQuery type
+    const endpoint = "";
+    setIsLoading(true);
+    const result = await fetch(endpoint, {
+      method: "POST",
+      body: JSON.stringify(topicQuery),
+    });
+    setIsLoading(false);
+    if (result.ok) {
+      const data = await result.json();
+      setTopicResults(data);
+    }
+    // console.log(result);
   };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-slate-900">
       <SearchBar isLoading={isLoading} onSearchBtnClick={onSearchBtnClick} />
-      <KnowledgePage topics={testData} isLoading={isLoading} />
+      <KnowledgePage topicResults={topicResults} isLoading={isLoading} />
+    </div>
+  );
+}
+
+function Filters(props: { updateFilters: Function }) {
+  return (
+    <div className="flex flex-col">
+      <div>{/* TODO: Finish */}</div>
     </div>
   );
 }
@@ -27,6 +59,7 @@ export default function Home() {
 function SearchBar(props: {
   isLoading: boolean;
   onSearchBtnClick: (s: string) => any;
+  // setTopicQuery: Function
 }) {
   const [text, setText] = useState<string>("");
 
