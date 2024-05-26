@@ -1,10 +1,10 @@
 import { YoutubeVideo } from "./youtube";
 
 export enum EducationLevel {
-    HIGH_SCHOOL,
-    COLLEGE,
-    GRADUATE,
-    PHD
+    HIGH_SCHOOL = 'High School',
+    COLLEGE = 'University/College',
+    GRADUATE = 'Graduate Program',
+    PHD = 'PhD',
 }
 
 export interface TopicQuery {
@@ -25,4 +25,8 @@ export interface TopicResult {
     query: string
     relevancy: number
     videos: YoutubeVideo[]
+}
+
+export interface PromptResult extends TopicResult {
+    category: string;
 }
