@@ -7,6 +7,7 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
+import {v4} from 'uuid';
 import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import {defineSecret} from "firebase-functions/params";
@@ -14,11 +15,13 @@ import {ChatGoogleGenerativeAI} from "@langchain/google-genai";
 import {
     PromptResult,
     TopicQuery,
-    TopicResult,
+    TopicResult, TopicSuggestQuery,
     youtubeCategoriesFormatted, youtubeCategoryList, YoutubeVideo,
     YoutubeVideoResult
 } from "../../src/contracts";
 import {google} from 'googleapis';
+import * as admin from 'firebase-admin';
+import {ChatMessageHistory} from "langchain/memory";
 
 const apiKey = defineSecret('GEMINI_API_KEY');
 
@@ -32,6 +35,20 @@ function getModel() {
     })
 }
 
+let inited = admin.apps.length > 0;
+
+if (!inited) {
+    inited = true;
+    try {
+        admin.initializeApp();
+        admin.firestore().settings({
+            ignoreUndefinedProperties: true,
+        });
+    } catch (err) {
+        logger.error(err);
+    }
+}
+
 async function youtubeApiCall(endpoint: string, params: any) {
     const youtube = google.youtube({ version: 'v3', auth: apiKey.value() });
     try {
@@ -43,11 +60,16 @@ async function youtubeApiCall(endpoint: string, params: any) {
     }
 }
 
+const historyMap = new Map<string, ChatMessageHistory>();
+
 export const topicStart = onRequest({
     secrets: [apiKey],
+    cors: true,
 }, async (request, response) => {
 
     const data = request.body as TopicQuery;
+
+    data.userId = data.userId || v4();
 
     const prompt = `
 I am a ${data.age} year old person with a ${data.education} degree.
@@ -100,7 +122,6 @@ Format the results as a raw json array with the fields "title", "summary", "quer
             maxResults: 3,
             videoCategoryId: youtubeCategoryList.find(value => value.title === result.category)?.id,
         });
-        console.log({videos})
         result.videos = videos.items.map((video): YoutubeVideo => ({
             url: `https://www.youtube.com/watch?v=${video.id.videoId}`,
             videoId: video.id.videoId,
@@ -111,12 +132,18 @@ Format the results as a raw json array with the fields "title", "summary", "quer
         }));
     }
 
-    response.json({results});
+    await admin.firestore().doc(`users/${data.userId}`).set({prompt});
+
+    response.json({results, userId: data.userId});
 });
 
 export const topicSuggest = onRequest({
     secrets: [apiKey],
-}, (request, response) => {
-    logger.info("Hello logs!", {structuredData: true});
-    response.send("Hello from Firebase topicSuggest!");
+    cors: true,
+}, async (request, response) => {
+
+    const data = request.body as TopicSuggestQuery;
+
+    // const beginningPrompt = (await admin.firestore().doc<{prompt: string}>(`users/${data.userId}`).get()).data();
+    console.log(data)
 });

@@ -14,6 +14,11 @@ export interface TopicQuery {
     topic: string;
 }
 
+export interface TopicSuggestQuery {
+    userId: string;
+    topics: string[];
+}
+
 export interface TopicResults {
     results: TopicResult[];
     youtubeCategory: string;
