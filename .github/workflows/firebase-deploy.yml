@@ -1,0 +1,53 @@
+name: 'Deploy to Firebase'
+on:
+  pull_request:
+    ref:
+      type: string
+      required: false
+      description: Ref to deploy
+  workflow_dispatch:
+jobs:
+  #### Builds everything and persists to nx cloud
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+      - name: Cache node modules
+        uses: actions/cache@v4
+        id: node-cache
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - run: npm ci
+        name: Npm Install
+        id: npm
+        if: steps.node-cache.outputs.cache-hit != 'true'
+      - run: npm run build
+        name: Build
+      # Functions deploy
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS_JSON_PROVISIONER }}'
+          project_id: pasadena-knowledge-graph
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        id: gcloud
+      - run: |-
+          gcloud auth list
+          npm run deploy
+        name: Deploy
+        id: deploy
