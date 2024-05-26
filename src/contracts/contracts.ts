@@ -1,4 +1,4 @@
-import {YoutubeVideoResult} from "@/contracts/youtube";
+import { YoutubeVideo } from "./youtube";
 
 export enum EducationLevel {
     HIGH_SCHOOL,
@@ -8,6 +8,7 @@ export enum EducationLevel {
 }
 
 export interface TopicQuery {
+    userId: string; // unique user id
     age: number;
     education: EducationLevel;
     topic: string;
@@ -23,5 +24,5 @@ export interface TopicResult {
     summary: string
     query: string
     relevancy: number
-    videos: YoutubeVideoResult[]
+    videos: YoutubeVideo[]
 }

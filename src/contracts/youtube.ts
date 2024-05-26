@@ -325,6 +325,14 @@ export const youtubeCategories = {
     ]
 }
 
+export interface YoutubeVideo {
+    url: string;
+    title: string;
+    description: string;
+    publishTime: string;
+    thumbnail: Thumbnail;
+}
+
 export interface YoutubeVideoResult {
     publishedAt: string
     channelId: string
