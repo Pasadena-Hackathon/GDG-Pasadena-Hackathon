@@ -5,10 +5,10 @@ import { TopicResults, TopicResult, YoutubeVideo } from "@/contracts";
 export function VideoResult(props: { videoResult: YoutubeVideo }) {
   //todo: thumbnail ?
   const videoUrl = props.videoResult.url;
-  const thumbnailUrl = props.videoResult.thumbnail.url;
+  // const thumbnailUrl = props.videoResult.thumbnail.url;
   return (
     <div className="aspect-square  place-content-center">
-      <a href={videoUrl}>
+      <a href={videoUrl} target="_blank">
         <img src={props.videoResult.thumbnail.url}></img>
       </a>
     </div>

@@ -25,9 +25,10 @@ export default function Home() {
     education: EducationLevel.HIGH_SCHOOL,
   });
 
-  const onSearchBtnClick = async (searchText: string) => {
+  const onSearchBtnClick = async () => {
     // const topicQuery = { topic: searchText }; //TODO: this needs to be TopicQuery type
     const endpoint = "https://topicstart-2u42nddpka-uc.a.run.app";
+    console.log("QUERY:" + topicQuery);
     setIsLoading(true);
     const result = await fetch(endpoint, {
       headers: { "content-type": "application/json" },
@@ -52,7 +53,11 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-slate-900">
-      <SearchBar isLoading={isLoading} onSearchBtnClick={onSearchBtnClick} />
+      <SearchBar
+        isLoading={isLoading}
+        onSearchBtnClick={onSearchBtnClick}
+        setTopicQuery={setTopicQuery}
+      />
       <Filters setTopicQuery={setTopicQuery} topicQuery={topicQuery} />
       <KnowledgePage topicResults={topicResults} isLoading={isLoading} />
     </div>
@@ -105,13 +110,14 @@ function Filters(props: { topicQuery: TopicQuery; setTopicQuery: Function }) {
 function SearchBar(props: {
   isLoading: boolean;
   onSearchBtnClick: (s: string) => any;
-  // setTopicQuery: Function
+  setTopicQuery: Function;
 }) {
   const [text, setText] = useState<string>("");
 
   const onClick = () => {
     if (text.length === 0 || props.isLoading) return;
     props.onSearchBtnClick?.(text);
+    props.setTopicQuery((prev: TopicQuery) => ({ ...prev, topic: text }));
   };
 
   return (
@@ -125,8 +131,12 @@ function SearchBar(props: {
           if (e.key === "Enter") onClick();
         }}
       />
-      <button className="btn btn-primary join-item" onClick={onClick}>
-        Search
+      <button
+        className={`btn btn-primary join-item`}
+        onClick={onClick}
+        disabled={props.isLoading}
+      >
+        {props.isLoading ? <div className="loading-spinner" /> : "Search"}
       </button>
     </div>
   );

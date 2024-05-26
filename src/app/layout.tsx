@@ -16,7 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} min-h-screen`}>{children}</body>
+      <body className={`${inter.className} min-h-screen`}>
+        {/* <div className="nav min-h-10 bg-slate-900 flex">
+          <image></image>
+        </div> */}
+        {children}
+      </body>
     </html>
   );
 }
