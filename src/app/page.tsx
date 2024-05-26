@@ -115,7 +115,7 @@ function SearchBar(props: {
   };
 
   return (
-    <div className="flex m-4 place-content-center join w-[80%] sm:w-[50%]">
+    <div className="flex m-4 place-content-center join w-[80%] sm:w-[50%] text-white">
       <input
         className="input input-primary input-md join-item focus:outline-none w-full opacity-70"
         onChange={(e) => setText(e.target.value)}
