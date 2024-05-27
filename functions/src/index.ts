@@ -51,16 +51,128 @@ if (!inited) {
 
 async function youtubeApiCall(endpoint: string, params: any) {
     const youtube = google.youtube({ version: 'v3', auth: apiKey.value() });
-    try {
-        const response = await (youtube as any)[endpoint].list({...params});
-        return response.data;
-    } catch (err) {
-        console.error('Error making API request:', err);
-        return null;
-    }
+    // Uncomment locally, and use a hard-coded key for demo, then run `npx firebase deploy --only=functions`
+    // const youtube = google.youtube({ version: 'v3', auth: 'replace-with-your-key' });
+    const response = await (youtube as any)[endpoint].list({...params});
+    return response.data;
 }
 
 const historyMap = new Map<string, ChatMessageHistory>();
+
+const hardCodedResults = {
+    "kind": "youtube#searchListResponse",
+    "etag": "wymlYzQ4T7aoBLHAi-17m93kSJ0",
+    "nextPageToken": "CAoQAA",
+    "regionCode": "US",
+    "pageInfo": {
+        "totalResults": 72285,
+        "resultsPerPage": 10
+    },
+    "items": [
+        {
+            "kind": "youtube#searchResult",
+            "etag": "qGz_1tfTvwrtbqTkbPnx5XpceP8",
+            "id": {
+                "kind": "youtube#video",
+                "videoId": "hmdaG1GeglI"
+            },
+            "snippet": {
+                "publishedAt": "2021-08-05T18:00:13Z",
+                "channelId": "UC6YyIqvJYIqfGLdHXzIMeww",
+                "title": "How to Publish a Book as a Teenager",
+                "description": "This is how I published my first book at 15 years old! Been workin' on this bad boy for 50 years... HERE IS MY BOOK LINK!!",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/hmdaG1GeglI/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/hmdaG1GeglI/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/hmdaG1GeglI/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    }
+                },
+                "channelTitle": "Madalyn Mac",
+                "liveBroadcastContent": "none",
+                "publishTime": "2021-08-05T18:00:13Z"
+            }
+        },
+        {
+            "kind": "youtube#searchResult",
+            "etag": "fDwZyzZVSHkr7V8L-0dxErG1Lhg",
+            "id": {
+                "kind": "youtube#video",
+                "videoId": "ApF7g8leh7M"
+            },
+            "snippet": {
+                "publishedAt": "2024-02-26T13:50:03Z",
+                "channelId": "UCEvn08jdRJ8iCmehs7hVNIw",
+                "title": "Create a Children&#39;s Book to Sell on Amazon KDP | Step by Step Tutorial to Self-Publish in 2024",
+                "description": "Ever dreamt of writing a children's story book? Turn that dream into reality! In this video, I'll guide you through creating and ...",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/ApF7g8leh7M/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/ApF7g8leh7M/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/ApF7g8leh7M/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    }
+                },
+                "channelTitle": "Ivy Hang",
+                "liveBroadcastContent": "none",
+                "publishTime": "2024-02-26T13:50:03Z"
+            }
+        },
+        {
+            "kind": "youtube#searchResult",
+            "etag": "nfRtr0jsUwwKCWyF7LqX6GMCSFA",
+            "id": {
+                "kind": "youtube#video",
+                "videoId": "BZja9NpjQ8Q"
+            },
+            "snippet": {
+                "publishedAt": "2022-12-14T00:13:28Z",
+                "channelId": "UCZil6bPPu4gaGroOoFhOlTA",
+                "title": "Amazon KDP journals low content books #stationery",
+                "description": "",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/BZja9NpjQ8Q/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/BZja9NpjQ8Q/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/BZja9NpjQ8Q/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    }
+                },
+                "channelTitle": "Tawana Simone",
+                "liveBroadcastContent": "none",
+                "publishTime": "2022-12-14T00:13:28Z"
+            }
+        }
+    ]
+}
 
 export const topicStart = onRequest({
     secrets: [apiKey],
@@ -90,38 +202,19 @@ Format the results as a raw json array with the fields "title", "summary", "quer
     const content = modelResponse.content as string;
     const results: PromptResult[] = JSON.parse(content.replace(/^```json/, '').replace(/```$/, ''));
 
-    // const results = [
-    //     {
-    //         "title": "Understanding the Publishing Process",
-    //         "summary": "This topic covers the various stages of getting your book published, from writing and editing to marketing and distribution. You'll learn about traditional publishing houses, self-publishing options, and the different roles involved in the process.",
-    //         "query": "how to publish a book",
-    //         "relevancy": 9,
-    //         "category": "Education"
-    //     },
-    //     {
-    //         "title": "Crafting a Compelling Manuscript",
-    //         "summary": "This topic focuses on the writing and editing process, covering aspects like outlining, character development, plot structure, and finding a professional editor. You'll gain valuable insights into crafting a strong and engaging manuscript.",
-    //         "query": "writing a book for beginners",
-    //         "relevancy": 8,
-    //         "category": "Education"
-    //     },
-    //     {
-    //         "title": "Marketing and Promoting Your Book",
-    //         "summary": "This topic explores effective strategies for marketing and promoting your book after publication. You'll learn about building an author platform, social media marketing, book reviews, and strategies for reaching your target audience.",
-    //         "query": "book marketing for authors",
-    //         "relevancy": 7,
-    //         "category": "Howto & Style"
-    //     }
-    // ] as PromptResult[];
-
     for (const result of results) {
-        const videos: {items: YoutubeVideoResult[]} = await youtubeApiCall('search', {
-            q: result.query,
-            part: 'snippet',
-            type: 'video',
-            maxResults: 3,
-            videoCategoryId: youtubeCategoryList.find(value => value.title === result.category)?.id,
-        });
+        let videos: {items: YoutubeVideoResult[]};
+        try {
+            videos = await youtubeApiCall('search', {
+                q: result.query,
+                part: 'snippet',
+                type: 'video',
+                maxResults: 3,
+                videoCategoryId: youtubeCategoryList.find(value => value.title === result.category)?.id,
+            });
+        } catch (err) {
+            videos = hardCodedResults as any;
+        }
         result.videos = videos.items.map((video): YoutubeVideo => ({
             url: `https://www.youtube.com/watch?v=${video.id.videoId}`,
             videoId: video.id.videoId,
